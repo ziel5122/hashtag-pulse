@@ -9,6 +9,10 @@ from pymongo import MongoClient
 class listener(StreamListener):
 
     def on_status(self, data):
+        j = data._json
+        if j['lang'] == 'en':
+            db.tweets.insert_one(j)
+            print j['lang']
         db.tweets.insert_one(data._json)
         print data._json
         print " "
