@@ -1,17 +1,28 @@
 import austin_oauth
+import json
 from tweepy import API
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
+from pymongo import MongoClient
 
 class listener(StreamListener):
 
-    def on_data(self, data):
-        print(data.lang)
+    def on_status(self, data):
+        db.tweets.insert_one(data._json)
+        print data._json
+        print " "
         return(True)
 
     def on_error(self, status):
-        print status
+        if status == 401:
+            print "make sure VM and host clock are in sync"
+        else:
+            print status
+
+client = MongoClient('argon.plttn.me', 27017)
+db = client['hashtag-pulse']
+db.authenticate('pulseUser', '+xCh4VduYDX1cG')
 
 oauth = austin_oauth.getOAuth()
 
