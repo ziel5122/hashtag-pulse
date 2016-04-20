@@ -5,6 +5,7 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import json
 
+
 class listener(StreamListener):
 
     def on_data(self, data):
@@ -14,6 +15,7 @@ class listener(StreamListener):
             if keys[i] == 'lang':
                 if j[keys[i]] == 'en':
                     print j[keys[i]]
+        print(data.lang)
         return(True)
 
     def on_error(self, status):
