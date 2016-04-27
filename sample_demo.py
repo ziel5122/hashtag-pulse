@@ -8,14 +8,20 @@ import json
 
 class listener(StreamListener):
 
-    def on_data(self, data):
-        j = json.loads(data)
+    def on_status(self, data):
+        j = data._json
         keys = j.keys()
+        '''
         for i in range (0, len(keys)):
             if keys[i] == 'lang':
                 if j[keys[i]] == 'en':
                     print j[keys[i]]
         print(data.lang)
+        '''
+        keys = j['entities'].keys()
+        for key in keys:
+            print key
+        exit()
         return(True)
 
     def on_error(self, status):

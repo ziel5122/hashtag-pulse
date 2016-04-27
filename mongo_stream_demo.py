@@ -13,8 +13,6 @@ class listener(StreamListener):
         if j['lang'] == 'en':
             db.tweets.insert_one(j)
             print j['lang']
-        db.tweets.insert_one(data._json)
-        print data._json
         print " "
         return(True)
 
@@ -32,7 +30,6 @@ oauth = austin_oauth.getOAuth()
 
 twitterStream = Stream(oauth, listener())
 twitterStream.sample()
-#twitterStream.filter(track=["dog"])
 
 '''
 api = API(auth)
