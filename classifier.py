@@ -2,6 +2,8 @@ from pymongo import MongoClient
 import random
 import nltk
 
+binary = True
+
 client = MongoClient('argon.plttn.me', 27017)
 db = client['hashtag-pulse']
 db.authenticate('pulseUser', '+xCh4VduYDX1cG')
@@ -14,7 +16,13 @@ count = 0
 for tweet in cursor:
     item = []
     item.append([word.lower() for word in tweet['text'].split() if len(word) >= 3])
-    item.append(tweet['label'])
+    if binary:
+        if (tweet['label'] == 1 or tweet['label'] == 2):
+            item.append(1)
+        else:
+            item.append(3)
+    else:
+        item.append(tweet['label'])
     tweets.append(item)
     count += 1
     
