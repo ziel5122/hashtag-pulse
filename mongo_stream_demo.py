@@ -13,7 +13,6 @@ class listener(StreamListener):
         if j['lang'] == 'en':
             db.tweets.insert_one(j)
             print j['lang']
-        print " "
         return(True)
 
     def on_error(self, status):
