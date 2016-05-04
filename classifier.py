@@ -2,13 +2,13 @@ from pymongo import MongoClient
 import random
 import nltk
 
-binary = True
+binary = False
 
 client = MongoClient('argon.plttn.me', 27017)
 db = client['hashtag-pulse']
 db.authenticate('pulseUser', '+xCh4VduYDX1cG')
 
-cursor = db.tweets.find({'$or':[{'label':1},{'label':2},{'label':3},{'label':4}]},{'text':1,'label':1,'_id':0})
+cursor = db.tweets.find({'$or':[{'label':"happy/excited"},{'label':"joke"},{'label':"sad/disappointed"},{'label':"angry"}]},{'text':1,'label':1,'_id':0})
 
 tweets = []
 
@@ -25,7 +25,7 @@ for tweet in cursor:
         item.append(tweet['label'])
     tweets.append(item)
     count += 1
-    
+
 print len(tweets)
 print count
 
@@ -41,7 +41,7 @@ def get_word_features(wordlist):
     wordlist = nltk.FreqDist(wordlist)
     word_features = wordlist.keys()
     return word_features
-    
+
 def extract_features(document):
     document_words = set(document)
     features = {}
@@ -62,8 +62,10 @@ for i in range(0, len(tweets)):
     actual = tweets[i][1]
     if predicted == actual:
         num_right += 1
-        
+
 print float(num_right) / len(tweets)
+
+classifier.show_most_informative_features(10)
 
 #tweets[i] is a piece of data
 #tweets[i][0] is a list of tokens
@@ -73,6 +75,6 @@ print float(num_right) / len(tweets)
 while (cursor.hasNext()):
     tweet = cursor.next()
     print tweet['text']
-    
+
     .split("\"")[1]
 '''
