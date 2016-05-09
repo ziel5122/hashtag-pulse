@@ -27,7 +27,9 @@ def buildTweetClassifier(binary):
         
     word_features = get_word_features(get_words_in_tweets(tweets))
     
-    def extract_features(document):
+    print word_features
+    
+    def extract_features(document, word_features=word_features):
         document_words = set(document)
         features = {}
         for word in word_features:
