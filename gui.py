@@ -6,7 +6,7 @@ import Tkinter as tkinter
 import math as math
 import threading as threading
 import random as random
-import stream_data
+import stream_data as stream
 random.seed()
 
 X = 0
@@ -177,10 +177,12 @@ class GUI(tkinter.Tk):
 	def __init__(self, height, numberOfBars, colorsOfBars):
 		tkinter.Tk.__init__(self)
 		self.barGraph = Graph(self, height, numberOfBars, colorsOfBars)
-		startButton = tkinter.Button(self, text="start", command = stream_data.startStream)
+		startButton = tkinter.Button(self, text="start", command = lambda: stream.startStream(textBox.get()))
 		startButton.pack()
-		stopButton = tkinter.Button(self, text="stop", command = stream_data.stopStream)
+		stopButton = tkinter.Button(self, text="stop", command = stream.stopStream)
 		stopButton.pack()
+		textBox = tkinter.Entry(self)
+		textBox.pack()
 
 	def setPercents(self, percentsArray):
 		self.barGraph.setPercents(percentsArray)
@@ -214,9 +216,14 @@ def runInMainLoop():
 
 def updatePercents():
 	oneHundredPercent = float(gui.barGraph.bars[0].maximumHeight)
-	gui.setPercents(stream_data.ratioList)
+	gui.setPercents(stream.ratioList)
 	gui.after(1000, updatePercents)
+
+def updateCounts():
+	stream.calcRollingTotal()
+	gui.after(10000, updateCounts)
 
 gui.after(1, runInMainLoop)
 gui.after(50, updatePercents)
+gui.after(10000, updateCounts)
 gui.startMainloop()

@@ -13,8 +13,12 @@ clf_file = open('tweet_classifier_small.pickle','rb')
 classifierObj = cPickle.load(clf_file)
 clf_file.close()
 ratioList = [0,0,0]
-tweetRolling = 0
-oldTweetTotal = 0
+globalCount = 20 #normalized
+lastCount = 0
+globalTweetTotal = 0
+globalEmotionList = [0,0,0]
+
+
 
 def adjustList(emotion, emotionList):
 
@@ -27,28 +31,44 @@ def adjustList(emotion, emotionList):
 
     return emotionList
 
-def tweetsPer10(tweetTotal):
-    globalTweetTotal = tweetTotal
+
+def calculateRatio():
+    global globalCount
+    global globalEmotionList
+    ratioList[0] = float(globalEmotionList[0]) / globalCount
+    ratioList[1] = float(globalEmotionList[1]) / globalCount
+    ratioList[2] = float(globalEmotionList[2]) / globalCount
+    print globalCount, ratioList
     pass
 
-
-
-def calculateRatio(emotionList, tweetTotal):
-    ratioList[0] = float(emotionList[0]) / tweetTotal
-    ratioList[1] = float(emotionList[1]) / tweetTotal
-    ratioList[2] = float(emotionList[2]) / tweetTotal
-    pass
-
-
-def setTweetTotal(arg):
+def updateGlobalCount(arg): #hacky workarounds to get tweet total up a scope
+    global globalTweetTotal
     globalTweetTotal = arg
+
+
+def calcRollingTotal(): #calculate rolling average
+    global globalCount
+    global lastCount
+    global globalTweetTotal
+    global globalEmotionList
+    globalCount = globalTweetTotal - lastCount
+    lastCount = globalTweetTotal
+    globalEmotionList[0] = 0
+    globalEmotionList[1] = 0
+    globalEmotionList[2] = 0
     pass
 
+def updateGlobalList(arg):
+    global globalEmotionList
+    globalEmotionList = arg
+    pass
 
 class listener(StreamListener):
     tweetTotal = 0
     emotionList = [0,0,0]
 
+    def reset(arg):
+        pass
 
     def on_status(self, data):
         j = data._json
@@ -57,9 +77,9 @@ class listener(StreamListener):
             emotion =  classifierInstance.classify(classifierObj.extract_features(tweetData.split()))
             self.tweetTotal += 1
             self.emotionList = adjustList(emotion, self.emotionList)
-            setTweetTotal(self.tweetTotal)
-            calculateRatio(self.emotionList, self.tweetTotal)
-            print ratioList
+            updateGlobalCount(self.tweetTotal)
+            updateGlobalList(self.emotionList)
+            calculateRatio()
         return(True)
 
     def on_error(self, status):
@@ -76,8 +96,15 @@ classifierInstance = classifierObj.getClassifier()
 streamInstance = Stream(oauth, listener()) #sets up listener
 
 
-def startStream(search='dogs'):
-    streamInstance.filter(track=[search],async=True)
+def startStream(search):
+    print search
+
+    if search == "":
+        streamInstance.sample(async=True)
+
+        pass
+    else:
+        streamInstance.filter(track=[search],async=True)
     pass
 
 
