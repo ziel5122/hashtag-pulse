@@ -53,7 +53,7 @@ def calcRollingTotal(): #calculate rolling average
     global globalEmotionList
     globalCount = globalTweetTotal - lastCount
     lastCount = globalTweetTotal
-    globalEmotionList[0] = 0
+    globalEmotionList[0] = 0 #reset emotion list when you do
     globalEmotionList[1] = 0
     globalEmotionList[2] = 0
     pass
@@ -100,11 +100,11 @@ def startStream(search):
     print search
 
     if search == "":
-        streamInstance.sample(async=True)
+        streamInstance.sample(async=True) #if empty, get sample of twitter
 
         pass
     else:
-        streamInstance.filter(track=[search],async=True)
+        streamInstance.filter(track=[search],async=True) #otherwise search for that query
     pass
 
 
