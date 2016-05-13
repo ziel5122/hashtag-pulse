@@ -5,7 +5,7 @@ import csv
 import re
 import random
 
-clf_file = open('16000.pickle','wb')
+clf_file = open('160000.pickle','wb')
 word_features = []
 
 classifier = tc.TweetClassifier()
@@ -13,7 +13,7 @@ tweets = []
 with open("/home/austin/CST205/data/training.1600000.processed.noemoticon.csv",'rb') as file:
     reader = csv.reader(file)
     for row in reader:
-        if random.randint(1,100) == 1:
+        if random.randint(1,10) == 1:
             item = []
             tweet_text = tc.strip_punctuation(row[5])
             item.append([word.lower() for word in tweet_text.split() if (len(word) >= 3 and re.search('[0-9]', word) == None)])
