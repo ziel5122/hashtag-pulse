@@ -12,10 +12,11 @@ import cPickle
 clf_file = open('tweet_classifier_small.pickle','rb')
 classifierObj = cPickle.load(clf_file)
 clf_file.close()
+ratioList = [0,0,0]
+tweetRolling = 0
+oldTweetTotal = 0
 
-
-
-def ratioCalc(emotion, emotionList):
+def adjustList(emotion, emotionList):
 
     if emotion == '0': #negative emotion
         emotionList[0] += 1
@@ -26,7 +27,22 @@ def ratioCalc(emotion, emotionList):
 
     return emotionList
 
+def tweetsPer10(tweetTotal):
+    globalTweetTotal = tweetTotal
+    pass
 
+
+
+def calculateRatio(emotionList, tweetTotal):
+    ratioList[0] = float(emotionList[0]) / tweetTotal
+    ratioList[1] = float(emotionList[1]) / tweetTotal
+    ratioList[2] = float(emotionList[2]) / tweetTotal
+    pass
+
+
+def setTweetTotal(arg):
+    globalTweetTotal = arg
+    pass
 
 
 class listener(StreamListener):
@@ -40,9 +56,10 @@ class listener(StreamListener):
             tweetData = tc.strip_punctuation(data.text)
             emotion =  classifierInstance.classify(classifierObj.extract_features(tweetData.split()))
             self.tweetTotal += 1
-            self.emotionList = ratioCalc(emotion, self.emotionList)
-
-            print emotion, self.tweetTotal, self.emotionList
+            self.emotionList = adjustList(emotion, self.emotionList)
+            setTweetTotal(self.tweetTotal)
+            calculateRatio(self.emotionList, self.tweetTotal)
+            print ratioList
         return(True)
 
     def on_error(self, status):
@@ -56,7 +73,16 @@ oauth = austin_oauth.getOAuth()
 
 classifierInstance = classifierObj.getClassifier()
 
-musicianStream = Stream(oauth, listener()) #sets up listener
-musicianStream.filter(track=['taylor swift'])
+streamInstance = Stream(oauth, listener()) #sets up listener
+
+
+def startStream(search='dogs'):
+    streamInstance.filter(track=[search],async=True)
+    pass
+
+
+def stopStream():
+    streamInstance.disconnect()
+    pass
 
 #musicianStream.disconnect() to close stream
