@@ -5,6 +5,9 @@ import math as math
 import threading as threading
 import random as random
 import stream_data as stream
+from tweepy import Stream
+from TweetStream import TweetStream
+import austin_oauth
 random.seed()
 
 X = 0
@@ -140,8 +143,11 @@ class Graph(tkinter.Canvas):
 			XsOfCenters.append(width)
 			width += self.barWidth/2
 			if i == numberOfBars -1:
-				break
-			width += self.spaceBetweenBars
+			    break
+			if i%2 == 0:
+			    continue
+			else:
+			    width += self.spaceBetweenBars
 		self.recomendedWidth = width + self.horizontalBumbers
 		return XsOfCenters
 
@@ -149,9 +155,13 @@ class Graph(tkinter.Canvas):
 	# changes the percent members of each of the bars.
 	# this is the best way to change what direction the
 	# bars grow in.
-	def setPercents(self, percentsArray):
-		for i in range(0, len(self.bars)):
-			self.bars[i].percent = percentsArray[i]
+	def setPercents(self, percentsArray, set):
+	    if set == 0:
+	        for i in range(0, len(self.bars), 2):
+			    self.bars[i].percent = percentsArray[i>>1]
+	    else:
+	        for i in range(1, len(self.bars), 2):
+	            self.bars[i].percent = percentsArray[i>>1]
 
 	# drawing option for smoothly approaching
 	# heights that match percents
@@ -169,21 +179,30 @@ class Graph(tkinter.Canvas):
 		for bar in self.bars:
 			bar.drawAtpercent()
 
-
+def startStream(text):
+    if text == "":
+        stream_instance.sample(async=True)
+    else:
+        stream_instance.filter(track=text.split(), async=True)
+        
+def stopStream():
+    gui.ts.reset()
+    stream_instance.disconnect()
 
 class GUI(tkinter.Tk):
 	def __init__(self, height, numberOfBars, colorsOfBars):
 		tkinter.Tk.__init__(self)
 		self.barGraph = Graph(self, height, numberOfBars, colorsOfBars)
-		startButton = tkinter.Button(self, text="start", command = lambda: stream.startStream(textBox.get()))
+		self.ts = TweetStream()
+		startButton = tkinter.Button(self, text="start", command=lambda:startStream(textBox.get()))
 		startButton.pack()
-		stopButton = tkinter.Button(self, text="stop", command = stream.stopStream)
+		stopButton = tkinter.Button(self, text="stop", command=stopStream)
 		stopButton.pack()
 		textBox = tkinter.Entry(self)
 		textBox.pack()
 
-	def setPercents(self, percentsArray):
-		self.barGraph.setPercents(percentsArray)
+	def setPercents(self, percentsArray, set):
+	    self.barGraph.setPercents(percentsArray, set)
 
 	def startMainloop(self):
 		self.mainloop()
@@ -195,10 +214,15 @@ class GUI(tkinter.Tk):
 
 
 
-colorsOfBars = [ 'red', 'green', 'blue' ]
+colorsOfBars = [ 'red', 'pink', 'gray', 'light gray', 'green', 'palegreen']
 height = 600
-numberOfBars = 3
+numberOfBars = 6
+oauth = austin_oauth.getOAuth()
 gui = GUI(height, numberOfBars, colorsOfBars)
+gui.setPercents([1,1,1], 0)
+gui.setPercents([1,1,1], 1)
+gui.ts.build()
+stream_instance = Stream(oauth, gui.ts)
 
 oneHundredPercent = float(gui.barGraph.bars[0].maximumHeight)
 # gui.setPercents(
@@ -210,18 +234,21 @@ oneHundredPercent = float(gui.barGraph.bars[0].maximumHeight)
 # )
 def runInMainLoop():
 	gui.barGraph.incrementTowardsPercents(2)
-	gui.after(1, runInMainLoop)
+	gui.after(10, runInMainLoop)
 
 def updatePercents():
 	oneHundredPercent = float(gui.barGraph.bars[0].maximumHeight)
-	gui.setPercents(stream.ratioList)
-	gui.after(1000, updatePercents)
+	#print 0,gui.ts.getRate()
+	gui.setPercents(gui.ts.getRate(), 1)
+	gui.after(2000, updatePercents)
 
 def updateCounts():
-	stream.calcRollingTotal()
-	gui.after(10000, updateCounts)
+	oneHundredPercent = float(gui.barGraph.bars[0].maximumHeight)
+	#print 1,gui.ts.getTotal()
+	gui.setPercents(gui.ts.getTotal(), 0)
+	gui.after(2000, updateCounts)
 
 gui.after(1, runInMainLoop)
-gui.after(50, updatePercents)
-gui.after(10000, updateCounts)
+gui.after(2000, updatePercents)
+gui.after(2000, updateCounts)
 gui.startMainloop()

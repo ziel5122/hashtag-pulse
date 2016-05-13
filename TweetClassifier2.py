@@ -9,27 +9,8 @@ word_features = []
 
 class TweetClassifier:
     def __init__(self):
-        '''
-        tweets = []
-        with open("/home/austin/CST205/hashtag-pulse/data/training.1600000.processed.noemoticon.csv", 'rb') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                item = []
-                tweet_text = strip_punctuation(row[5])
-                item.append([word.lower() for word in tweet_text.split() if (len(word) >= 3 and re.search('[0-9]', word) == None)])
-                item.append(row[0])
-                tweets.append(item)
+        print "a"
         
-        print "done reading"
-        self.word_features = get_word_features(get_words_in_tweets(tweets))
-        
-        training_set = nltk.classify.apply_features(self.extract_features, tweets, True)
-        #print training_set[0][0]
-        self.classifier = nltk.NaiveBayesClassifier.train(training_set)
-        print "done training"
-        self.classifier.show_most_informative_features(10)
-        #self.classifier = nltk.NaiveBayesClassifier.train(tweets)
-        '''
     def getClassifier(self):
         return self.classifier
         
@@ -48,8 +29,9 @@ class TweetClassifier:
         self.word_features = wordlist.keys()
         
     def classify(self, tweet):
-        print tweet
-        return self.classifier.classify(self.extract_features(tweet))
+        num = self.classifier.classify(self.extract_features(tweet))
+        print num
+        return num
       
     def extract_features(self, document):
         document_words = set(document)
@@ -76,5 +58,5 @@ def get_words_in_tweets(tweets):
         all_words.extend(words)
     return all_words
 
-def strip_punctuation(text):
+def stripPunctuation(text):
     return re.sub('[^0-9a-zA-Z\']', ' ', text)

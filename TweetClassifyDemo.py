@@ -15,7 +15,7 @@ with open("/home/austin/CST205/data/testdata.manual.2009.06.14.csv", 'rb') as fi
     counter = 0
     for row in reader:
         item = []
-        tweet_text = tc.strip_punctuation(row[5])
+        tweet_text = tc.stripPunctuation(row[5])
         item.append([word.lower() for word in tweet_text.split() if (len(word) >= 3 and re.search('[0-9]', word) == None)])
         item.append(row[0])
         tweets.append(item)
@@ -25,6 +25,8 @@ with open("/home/austin/CST205/data/testdata.manual.2009.06.14.csv", 'rb') as fi
 num_right = 0       
 for tweet in tweets:
     result = classifier.getClassifier().classify(classifier.extract_features(tweet[0]))
+    print tweet[0]
+    print result
     if result == tweet[1]:
         num_right = num_right + 1
 

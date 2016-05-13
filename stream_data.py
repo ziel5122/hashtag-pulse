@@ -73,7 +73,7 @@ class listener(StreamListener):
     def on_status(self, data):
         j = data._json
         if j['lang'] == 'en':
-            tweetData = tc.strip_punctuation(data.text)
+            tweetData = tc.stripPunctuation(data.text)
             emotion =  classifierInstance.classify(classifierObj.extract_features(tweetData.split()))
             self.tweetTotal += 1
             self.emotionList = adjustList(emotion, self.emotionList)
