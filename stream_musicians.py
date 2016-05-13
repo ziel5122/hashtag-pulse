@@ -14,8 +14,6 @@ classifierObj = cPickle.load(clf_file)
 clf_file.close()
 
 
-emotionList = [0,0,0]
-
 
 def ratioCalc(emotion, emotionList):
 
