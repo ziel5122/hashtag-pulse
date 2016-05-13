@@ -14,17 +14,18 @@ classifierObj = cPickle.load(clf_file)
 clf_file.close()
 
 
+emotionList = [0,0,0]
+
 
 def ratioCalc(emotion, emotionList):
 
-    if emotion == 0: #negative emotion
+    if emotion == '0': #negative emotion
         emotionList[0] += 1
-    if emotion == 2: #neutral emotion
+    if emotion == '2': #neutral emotion
         emotionList[1] += 1
-    if emotion == 4: #postive emotion
+    if emotion == '4': #postive emotion
         emotionList[2] += 1
 
-    print emotionList
     return emotionList
 
 
@@ -43,7 +44,7 @@ class listener(StreamListener):
             self.tweetTotal += 1
             self.emotionList = ratioCalc(emotion, self.emotionList)
 
-            print emotion, self.tweetTotal, #self.emotionList
+            print emotion, self.tweetTotal, self.emotionList
         return(True)
 
     def on_error(self, status):
