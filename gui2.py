@@ -84,7 +84,7 @@ class Graph(tkinter.Canvas):
 		# a width that is recomended for the canvas
 		# based on them. The height of the canvas is still
 		# chosed by whoever constructs the Graph object
-		self.verticalBumbers = 200
+		self.verticalBumbers = 50
 		self.horizontalBumbers = 75
 		self.spaceBetweenBars = 50
 		self.barWidth = 100
@@ -122,7 +122,7 @@ class Graph(tkinter.Canvas):
 			self.bars.append(
 				Bar(
 					self,
-					(XsOfCenters[i], self.verticalBumbers),
+					(XsOfCenters[i], 4*self.verticalBumbers),
 					self.winfo_height()-2*self.verticalBumbers,
 					self.barWidth,
 					colorsOfBars[i]
@@ -202,9 +202,9 @@ class GUI(tkinter.Tk):
         self.tkhappy = pil.ImageTk.PhotoImage(self.happy)
         self.tksad = pil.ImageTk.PhotoImage(self.sad)
         self.tkneutral = pil.ImageTk.PhotoImage(self.neutral)
-        self.barGraph.create_image((675,600), image=self.tkhappy)
-        self.barGraph.create_image((175,600), image=self.tksad)
-        self.barGraph.create_image((425,600), image=self.tkneutral)
+        self.barGraph.create_image((675,500), image=self.tkhappy)
+        self.barGraph.create_image((175,500), image=self.tksad)
+        self.barGraph.create_image((425,500), image=self.tkneutral)
         self.ts = TweetStream()
         startButton = tkinter.Button(self, text="start", command=lambda:startStream(textBox.get()))
         startButton.pack()
@@ -223,7 +223,7 @@ class GUI(tkinter.Tk):
         self.barGraph.drawAllBarsAtPercentHeight()
         
 colorsOfBars = [ 'red', 'pink', 'gray', 'light gray', 'green', 'palegreen']
-height = 700
+height = 600
 numberOfBars = 6
 oauth = austin_oauth.getOAuth()
 gui = GUI()
