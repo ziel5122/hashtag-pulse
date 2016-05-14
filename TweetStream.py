@@ -30,8 +30,9 @@ class TweetStream(StreamListener):
     def on_status(self, data):
         tweet = data._json
         if tweet['lang'] == 'en':
-            tweet_text = tc.stripPunctuation(tweet['text'])
-            self.updateCounts(self.classifier.getClassifier().classify(self.classifier.extract_features(tweet_text.split())))
+            tweet_text = tc.stripPunctuation(tweet['text'].encode('utf-8'))
+            self.updateCounts(self.classifier.getClassifier().classify(self.classifier.extract_features(tweet_text)))
+            #self.updateCounts(self.classifier.getClassifier().classify(self.classifier.extract_features(tweet_text.split())))
 
     def updateCounts(self, emotion):
         self.updateTotal(emotion)
@@ -49,9 +50,11 @@ class TweetStream(StreamListener):
         if self.tweets_per == 0:
             return [0,0,0]
         else:
-            rates = map(lambda x: float(self.emotions_per[x]) / self.tweets_per, self.emotions_per)
+            rates = []
+            for key in self.emotions_per:
+                rates.append(float(self.emotions_per[key]) / self.tweets_per)
+                self.emotions_per[key] = 0
             self.tweets_per = 0
-            self.emotions_per = dict.fromkeys(self.emotions_per, 0)
             return rates
             
     def getTotal(self):

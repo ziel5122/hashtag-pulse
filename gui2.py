@@ -246,7 +246,7 @@ def updateCounts():
 	oneHundredPercent = float(gui.barGraph.bars[0].maximumHeight)
 	#print 1,gui.ts.getTotal()
 	gui.setPercents(gui.ts.getTotal(), 0)
-	gui.after(2000, updateCounts)
+	gui.after(10000, updateCounts)
 
 gui.after(1, runInMainLoop)
 gui.after(2000, updatePercents)

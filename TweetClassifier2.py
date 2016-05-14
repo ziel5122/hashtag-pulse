@@ -59,4 +59,5 @@ def get_words_in_tweets(tweets):
     return all_words
 
 def stripPunctuation(text):
-    return re.sub('[^0-9a-zA-Z\']', ' ', text)
+    return re.compile('[^a-zA-Z0-9\']').split(text)
+    #return re.sub('[^a-zA-Z0-9\']', ' ', text)

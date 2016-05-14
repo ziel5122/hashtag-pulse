@@ -60,4 +60,6 @@ class TweetClassifier:
         return all_words
 
 def strip_punctuation(text):
-    return re.sub('[^0-9a-zA-Z\']', ' ', text)
+    text = re.sub('[?!#@/\\\"\[\]\{\}]', ' ', text)
+    print text
+    return text
