@@ -1,5 +1,6 @@
 import time as time
 import PIL as pil
+from PIL import ImageTk
 import Tkinter as tkinter
 import math as math
 import threading as threading
@@ -83,7 +84,7 @@ class Graph(tkinter.Canvas):
 		# a width that is recomended for the canvas
 		# based on them. The height of the canvas is still
 		# chosed by whoever constructs the Graph object
-		self.verticalBumbers = 100
+		self.verticalBumbers = 200
 		self.horizontalBumbers = 75
 		self.spaceBetweenBars = 50
 		self.barWidth = 100
@@ -187,38 +188,46 @@ def startStream(text):
         
 def stopStream():
     gui.ts.reset()
+    updatePercents()
+    updateCounts()
     stream_instance.disconnect()
-
+    
 class GUI(tkinter.Tk):
-	def __init__(self, height, numberOfBars, colorsOfBars):
-		tkinter.Tk.__init__(self)
-		self.barGraph = Graph(self, height, numberOfBars, colorsOfBars)
-		self.ts = TweetStream()
-		startButton = tkinter.Button(self, text="start", command=lambda:startStream(textBox.get()))
-		startButton.pack()
-		stopButton = tkinter.Button(self, text="stop", command=stopStream)
-		stopButton.pack()
-		textBox = tkinter.Entry(self)
-		textBox.pack()
-
-	def setPercents(self, percentsArray, set):
-	    self.barGraph.setPercents(percentsArray, set)
-
-	def startMainloop(self):
-		self.mainloop()
-
-	def firstDraw(self):
-		self.barGraph.drawAllBarsAtPercentHeight()
-
-
-
-
-
+    def build(self, height, numberOfBars, colorsOfBars):
+        self.wm_title("# P U L S E")
+        self.barGraph = Graph(self, height, numberOfBars, colorsOfBars)
+        self.neutral = pil.Image.open("neutral.png")
+        self.sad = pil.Image.open("frown.png")
+        self.happy = pil.Image.open("smile.png")
+        self.tkhappy = pil.ImageTk.PhotoImage(self.happy)
+        self.tksad = pil.ImageTk.PhotoImage(self.sad)
+        self.tkneutral = pil.ImageTk.PhotoImage(self.neutral)
+        self.barGraph.create_image((675,600), image=self.tkhappy)
+        self.barGraph.create_image((175,600), image=self.tksad)
+        self.barGraph.create_image((425,600), image=self.tkneutral)
+        self.ts = TweetStream()
+        startButton = tkinter.Button(self, text="start", command=lambda:startStream(textBox.get()))
+        startButton.pack()
+        stopButton = tkinter.Button(self, text="stop", command=stopStream)
+        stopButton.pack()
+        textBox = tkinter.Entry(self)
+        textBox.pack()
+        
+    def setPercents(self, percentsArray, set):
+        self.barGraph.setPercents(percentsArray, set)
+        
+    def startMainloop(self):
+        self.mainloop()
+        
+    def firstDraw(self):
+        self.barGraph.drawAllBarsAtPercentHeight()
+        
 colorsOfBars = [ 'red', 'pink', 'gray', 'light gray', 'green', 'palegreen']
-height = 600
+height = 700
 numberOfBars = 6
 oauth = austin_oauth.getOAuth()
-gui = GUI(height, numberOfBars, colorsOfBars)
+gui = GUI()
+gui.build(height, numberOfBars, colorsOfBars)
 gui.setPercents([1,1,1], 0)
 gui.setPercents([1,1,1], 1)
 gui.ts.build()
